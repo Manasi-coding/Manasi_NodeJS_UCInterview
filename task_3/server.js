@@ -1,13 +1,58 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const Episode = require('./models/Episode');
+const express = require('express')
+const mongoose = require('mongoose')
+const Episode = require('./models/Episode')
+const PORT = 3000
 
-const app = express();
-app.use(express.json());
+const app = express()
+app.use(express.json())
 
-mongoose.connect('your_mongodb_connection_string_here', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
+mongoose.connect('your_mongodb_connection_string_here')
 .then(() => console.log("Connected to MongoDB"))
-.catch(err => console.error("MongoDB connection failed:", err));
+.catch(err => console.error("MongoDB connection failed:", err))
+
+//post (add new eps manually)
+//get (get all the eps)
+//get (get just one ep by its id)
+//Episode is a mongoose model
+
+app.post('/eps', async(req,res) => {
+    try{
+        const newEp = new Episode(req.body)     //new Episode object
+        await newEp.save()                      //saving the new ep in the database
+        //await coz it takes time to save
+        res.status(201).json(newEp)             //201 - created
+    }
+    catch (err){
+        console.error(err)
+    }
+})
+
+app.get('/eps', async(req,res) => {
+    try{
+        const getAllEps = await Episode.find()
+        res.json(getAllEps)
+    }
+    catch (err){
+        console.error(err)
+    }
+})
+
+app.get('/eps/:id', async(req,res) => {
+    try{
+        const getEp = await Episode.findOne({ id: req.params.id });
+        if (!getEp)
+            return res.status(404).json({ error: "Episode not found" });
+        res.json(getEp);
+        //The part inside { } is an object
+        //not findByID bcuz that is associated with MongoDB's ID
+        //params = values captured from the URL path
+        //req.params.id = the value passed in the :id part of the route
+    }
+    catch (err){
+        console.error(err)
+    }
+})
+
+app.listen(PORT, () => {
+    console.log(`Running on: ${PORT}`)
+})
