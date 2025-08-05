@@ -19,7 +19,7 @@ mongoose.connect('mongodb+srv://MANASI:Iwin123@central-perk.l1lohsm.mongodb.net/
 //get (get just one ep by its id)
 //Episode is a mongoose model
 
-app.post('/eps', async(req,res) => {
+app.post('/eps', async (req,res) => {
     try{
         const newEp = new Episode(req.body)     //new Episode object
         await newEp.save()                      //saving the new ep in the database
@@ -31,7 +31,7 @@ app.post('/eps', async(req,res) => {
     }
 })
 
-app.get('/eps', async(req,res) => {
+app.get('/eps', async (req,res) => {
     try{
         const getAllEps = await Episode.find()
         res.json(getAllEps)
@@ -41,12 +41,12 @@ app.get('/eps', async(req,res) => {
     }
 })
 
-app.get('/eps/:id', async(req,res) => {
+app.get('/eps/:id', async (req,res) => {
     try{
-        const getEp = await Episode.findOne({ id: req.params.id });
+        const getEp = await Episode.findOne({id: req.params.id})
         if (!getEp)
-            return res.status(404).json({ error: "Episode not found" });
-        res.json(getEp);
+            return res.status(404).json({ error: "Episode not found" })
+        res.json(getEp)
         //The part inside { } is an object
         //not findByID bcuz that is associated with MongoDB's ID
         //params = values captured from the URL path
@@ -59,4 +59,50 @@ app.get('/eps/:id', async(req,res) => {
 
 app.listen(PORT, () => {
     console.log(`Running on http://localhost:${PORT}`)
+})
+
+//put (upload a full ep by its id)
+//patch (update specific fields of the episode)
+//delete (permanently delete an ep)
+
+app.put('/eps/:id', async (req,res) => {
+    try{
+        const updatedEp = await Episode.findOneAndUpdate({id: req.params.id}, req.body, {new: true})
+        //new: true is necessary. otherwise, MongoDB won't update
+        if (!updatedEp)
+            return res.status(404).json({ error: "Episode not found" })
+        res.json(updatedEp)
+    }
+    catch (err){
+        console.error(err)
+    }
+})
+
+app.patch('/eps/:id', async (req,res) => {
+    try{
+        const updatedEp = await Episode.findOne({id: req.params.id})
+        if (!updatedEp)
+            return res.status(404).json({ error: "Episode not found" })
+        Object.assign(updatedEp, req.body)
+        await updatedEp.save()
+        res.json(updatedEp)
+    }
+    catch (err){
+        console.error(err)
+    }
+})
+
+//use Object.assign() only in PATCH, not in PUT
+//PUT -> overwrite the entire object
+
+app.delete('/eps/:id', async (req,res) => {
+    try{
+        const toDel = await Episode.findOneAndDelete({id: req.params.id})
+        if(!toDel)
+            return res.status(404).json({ error: "Episode not found" })
+        res.json({ message: "Episode deleted successfully", deletedEpisode: toDel })
+    }
+    catch (err){
+        console.error(err)
+    }
 })
