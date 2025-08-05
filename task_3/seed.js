@@ -2,12 +2,13 @@ const mongoose = require('mongoose')
 const axios = require('axios')
 const Episode = require('./models/Episode')
 
-const mongoURI = 'mongodb+srv://manasi:Iwin123@cluster0.gbbk95b.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+const mongoURI = 'mongodb+srv://MANASI:Iwin123@central-perk.l1lohsm.mongodb.net/?retryWrites=true&w=majority&appName=Central-Perk'
 mongoose.connect(mongoURI)
 
 async function seedDB() {
     try{
-        const response = await axios.get('https://api.tvmaze.com/shows/%7BFetched_id%7D/episodes')
+        const showId = 82;
+        const response = await axios.get(`https://api.tvmaze.com/shows/${showId}/episodes`);
         const eps = response.data.map (episode => ({
         id: episode.id,
         name: episode.name,
