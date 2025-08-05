@@ -6,6 +6,10 @@ const PORT = 3000
 const app = express()
 app.use(express.json())
 
+app.get('/', (req, res) => {
+  res.send('Welcome to the Episodes API!');
+})
+
 mongoose.connect('mongodb+srv://MANASI:Iwin123@central-perk.l1lohsm.mongodb.net/?retryWrites=true&w=majority&appName=Central-Perk')
 .then(() => console.log("Connected to MongoDB"))
 .catch(err => console.error("MongoDB connection failed:", err))
@@ -54,5 +58,5 @@ app.get('/eps/:id', async(req,res) => {
 })
 
 app.listen(PORT, () => {
-    console.log(`Running on http://localhost: ${PORT}`)
+    console.log(`Running on http://localhost:${PORT}`)
 })
