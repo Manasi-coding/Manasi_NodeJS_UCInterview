@@ -1,14 +1,13 @@
+const express = require('express');
 const mongoose = require('mongoose');
+const Episode = require('./models/Episode');
 
-const epSchema = new mongoose.Schema({
-    id: Number,
-    name: String,
-    season: Number,
-    number: Number,
-    airdate: String,
-    summary: String,
-});
+const app = express();
+app.use(express.json());
 
-module.exports = mongoose.model('Episode', epSchema);
-// module - Episode.js
-//.model(name, schema) => Export a Mongoose model named 'Episode' using the schema epSchema to use it in other files.
+mongoose.connect('your_mongodb_connection_string_here', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log("Connected to MongoDB"))
+.catch(err => console.error("MongoDB connection failed:", err));
